@@ -8,13 +8,17 @@
     </block>
   </view> -->
 
+  <view class='background'>
+    <image class='backgroundPic' mode='aspectFill|top left' src='{{msgUrl}}'/>
+  </view>
   <view class="usermotto">
     <text class="user-motto">{{motto}}</text>
   </view>
 
-  <view class='background'>
-    <image class='backgroundPic' mode='aspectFill|top left' src='{{msgUrl}}'/>
-  </view>
-
   <button class='get-answer' bindtap='getAnswer'>看答案</button>
+
+  <button bindtap='animation'>播放动画</button>
+
+  <image class="userinfo-avatar" animation="{{animationData}}" src="../../source/image.jpg"/>
+  <text class='error_log'>{{log_text}}</text>
 </view>

@@ -1,6 +1,7 @@
 //index.js
 //获取应用实例
 const app = getApp()
+
 var network = require("../../utils/network.js")
 
 
@@ -10,13 +11,32 @@ var pageObject = {
     motto: '',
     userInfo: {},
     hasUserInfo: false,
-    canIUse: wx.canIUse('button.open-type.getUserInfo')
+    canIUse: wx.canIUse('button.open-type.getUserInfo'),
+    animationData: {}
   },
   //事件处理函数
   bindViewTap: function() {
     wx.navigateTo({
       url: '../logs/logs'
     })
+  },
+  animation: function() {
+    var animation = wx.createAnimation({
+      transformOrigin: "50% 50%",
+      duration: 1000,
+      timingFunction: "ease",
+      delay: 0
+    })
+    animation.translate(100,100).step({duration:4000})
+    animation.scale(2, 2).rotate(45).step()
+    this.setData({
+      animationData: animation.export()
+    })
+
+    // 动画结束执行
+    setTimeout(function () {
+      console.log("这里写结束处理程序!!")  //官方写法就这样.暂时没有找到相关api.
+    }.bind(this), 1000)
   },
   onLoad: function () {
     if (app.globalData.userInfo) {
@@ -60,7 +80,10 @@ var pageObject = {
   },
   getData: function () {
     var that = this
+    var url = app.globalData.BASE_URL + app.globalData.QUERY_PATH + app.globalData.URL_SUFFIX
+    console.log(url)
     network.requestLoading(
+      //url,
       'https://www.baidu.com',
       'this.data.params', 
       '正在加载数据', 
@@ -72,7 +95,10 @@ var pageObject = {
           motto:"好死不如赖活着"
         })
       },
-      function () {
+      function (res) {
+        that.setData({
+          error_log:res
+        })
         wx.showToast({
           title: '加载数据失败',
         })

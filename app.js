@@ -34,6 +34,9 @@ App({
     })
   },
   globalData: {
-    userInfo: null
+    userInfo: null,
+    BASE_URL: 'https://starsharp06sharp.ac.cn/',
+    URL_SUFFIX: '?otype=json&jsonp=json',
+    QUERY_PATH: 'mini_query'
   }
 })
