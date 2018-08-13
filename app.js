@@ -32,11 +32,18 @@ App({
         }
       }
     })
+
+    this.globalData.screen_width = wx.getSystemInfoSync().windowWidth
+    this.globalData.screen_height = wx.getSystemInfoSync().windowHeight
+    console.log('  ' + this.globalData.screen_width + ' ' + this.globalData.screen_height)
   },
   globalData: {
     userInfo: null,
-    BASE_URL: 'https://starsharp06sharp.ac.cn/',
+    BASE_URL: 'https://hello.qq.com/',
     URL_SUFFIX: '?otype=json&jsonp=json',
-    QUERY_PATH: 'mini_query'
+    QUERY_PATH: 'mini_query',
+    MUSIC_PATH: 's.mp3',
+    screen_width: 0,
+    screen_height: 0
   }
 })

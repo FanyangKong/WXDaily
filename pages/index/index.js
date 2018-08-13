@@ -4,6 +4,19 @@ const app = getApp()
 
 var network = require("../../utils/network.js")
 
+// 声音资源
+var audioCtx = wx.createAudioContext('myAudio')
+const innerAudioContext = wx.createInnerAudioContext()
+innerAudioContext.autoplay = false
+innerAudioContext.src = app.globalData.BASE_URL + app.globalData.MUSIC_PATH
+innerAudioContext.onPlay(() => {
+  console.log('开始播放')
+})
+innerAudioContext.onError((res) => {
+  console.log(res.errMsg)
+  console.log(res.errCode)
+})
+
 
 var pageObject = {
   data: {
@@ -12,7 +25,27 @@ var pageObject = {
     userInfo: {},
     hasUserInfo: false,
     canIUse: wx.canIUse('button.open-type.getUserInfo'),
-    animationData: {}
+    animationData: {
+      status: 'close', //默认动画窗口关闭状态
+      animationTop:{},
+      animationBottom:{}
+    },
+    animationDuration: 2000,
+    shakeInfo: {
+      num:0
+    },
+    shakeData: {
+      x:0,
+      y:0,
+      z:0,
+      lastX: 0,
+      lastY: 0,
+      lastZ: 0,
+      lastTime: 0,
+      shakeSpeed: 4,
+      timeInterval: 1000,
+      isRequest: false,
+    }
   },
   //事件处理函数
   bindViewTap: function() {
@@ -20,51 +53,112 @@ var pageObject = {
       url: '../logs/logs'
     })
   },
+  // 开始动画，动画结束后执行回调
+  shake_shake_start: function(callback) {
+    // 动画结束执行
+    if(this.data.animationData.status == 'close') {
+      callback()
+      return
+    }
+    this.animation()    
+    setTimeout(function () {
+      console.log("shake_shake_start!!")  //官方写法就这样.暂时没有找到相关api.
+      this.data.animationData.status = 'close'      
+      callback()
+    }.bind(this), this.data.animationDuration)
+  },
+  shake_shake_end: function(callback) {
+    if(this.data.animationData.status == 'open') {
+      return
+    }
+    this.animation()    
+    setTimeout(function () {
+      console.log("shake_shake_end!!")  //官方写法就这样.暂时没有找到相关api.
+      this.data.animationData.status = 'open'
+      callback()
+      this.data.shakeData.isRequest = false
+    }.bind(this), this.data.animationDuration)
+  },
   animation: function() {
-    var animation = wx.createAnimation({
+    console.log(this.data.animationData)
+    
+    var scroll_height
+    if (this.data.animationData.status == 'close') {
+      scroll_height = app.globalData.screen_height * 0.5 //向两侧移动
+      this.data.animationData.status = 'open'
+    } else {
+      scroll_height = 0 // 回到原位
+      this.data.animationData.status = 'close'
+    }
+    var animationTop = wx.createAnimation({
       transformOrigin: "50% 50%",
-      duration: 1000,
-      timingFunction: "ease",
+      duration: this.data.animationDuration,
+      timingFunction: "ease-in",
       delay: 0
     })
-    animation.translate(100,100).step({duration:4000})
-    animation.scale(2, 2).rotate(45).step()
-    this.setData({
-      animationData: animation.export()
+    animationTop.translate(0, -scroll_height).step()
+    var animationBottom = wx.createAnimation({
+      transformOrigin: "50% 50%",
+      duration: this.data.animationDuration,
+      timingFunction: "ease-in",
+      delay: 0
     })
+    animationBottom.translate(0, scroll_height).step()
 
-    // 动画结束执行
-    setTimeout(function () {
-      console.log("这里写结束处理程序!!")  //官方写法就这样.暂时没有找到相关api.
-    }.bind(this), 1000)
+    this.setData({
+      animationData: {
+        status: this.data.animationData.status,
+        animationTop: animationTop.export(),
+        animationBottom: animationBottom.export()
+      }
+    })
+  },
+  shake: function (acceleration) {
+    //编写摇一摇方法
+    var nowTime = new Date().getTime();//记录当前时间
+    var diffTime = nowTime - this.data.shakeData.lastTime;//记录时间段    
+    //如果这次摇的时间距离上次摇的时间有一定间隔 才执行
+    console.log('shake   ' + acceleration)
+    if (!this.data.shakeData.isRequest && (diffTime > this.data.shakeData.timeInterval)) {
+      this.setData({
+        log_text: '进入判定回调' + nowTime
+      })
+      this.data.shakeData.lastTime = nowTime;//记录本次摇动时间，为下次计算摇动时间做准备
+      var x = acceleration.x;//获取x轴数值，x轴为垂直于北轴，向东为正
+      var y = acceleration.y;//获取y轴数值，y轴向正北为正
+      var z = acceleration.z;//获取z轴数值，z轴垂直于地面，向上为正
+    
+      //计算 公式的意思是 单位时间内运动的路程，即为我们想要的速度
+      var speed = Math.abs(x + y + z - this.data.shakeData.lastX - this.data.shakeData.lastY - this.data.shakeData.lastZ) / diffTime * 10000;
+      this.setData({
+        content: (x+y+z) + "  " + speed + "  " + this.data.shakeData.shakeSpeed
+      })
+      if (speed > this.data.shakeData.shakeSpeed) {//如果计算出来的速度超过了阈值，那么就算作用户成功摇一摇
+        this.data.shakeData.isRequest = true      
+        this.data.shakeInfo.num = 1
+        innerAudioContext.play()        
+        wx.stopAccelerometer()
+        this.getAnswer();
+      }
+      this.data.shakeData.lastX = x;//赋值，为下一次计算做准备
+      this.data.shakeData.lastY = y;//赋值，为下一次计算做准备
+      this.data.shakeData.lastZ = z;//赋值，为下一次计算做准备
+    }
   },
   onLoad: function () {
-    if (app.globalData.userInfo) {
-      this.setData({
-        userInfo: app.globalData.userInfo,
-        hasUserInfo: true
-      })
-    } else if (this.data.canIUse){
-      // 由于 getUserInfo 是网络请求，可能会在 Page.onLoad 之后才返回
-      // 所以此处加入 callback 以防止这种情况
-      app.userInfoReadyCallback = res => {
-        this.setData({
-          userInfo: res.userInfo,
-          hasUserInfo: true
-        })
-      }
-    } else {
-      // 在没有 open-type=getUserInfo 版本的兼容处理
-      wx.getUserInfo({
-        success: res => {
-          app.globalData.userInfo = res.userInfo
-          this.setData({
-            userInfo: res.userInfo,
-            hasUserInfo: true
-          })
-        }
-      })
-    }
+    wx.onAccelerometerChange(this.shake)
+  },
+  onShow:function() {
+    this.startAccelerometerProxy()
+  },
+  startAccelerometerProxy() {
+    wx.startAccelerometer({
+      interval:'normal'
+    })
+  }
+  ,
+  onHide: function() {
+    wx.stopAccelerometer()
   },
   getUserInfo: function(e) {
     console.log(e)
@@ -75,25 +169,31 @@ var pageObject = {
     })
   },
   getAnswer:function (e) {
-    console.log("getAnswer")
-    this.getData()
+    console.log('isRequest ' + this.data.shakeData.isRequest)
+    this.shake_shake_start(this.requestAnswer)
   },
-  getData: function () {
+  requestAnswer: function (e) {
+
+    // 如果当前窗口处于open状态，则需要先close再发起请求
+
+    wx.stopAccelerometer()
+    console.log("getAnswer")
     var that = this
     var url = app.globalData.BASE_URL + app.globalData.QUERY_PATH + app.globalData.URL_SUFFIX
     console.log(url)
     network.requestLoading(
-      //url,
-      'https://www.baidu.com',
+      url,
       'this.data.params', 
       '正在加载数据', 
       function (res) {
         //res就是我们请求接口返回的数据
         console.log(res)
         that.setData({
-          msgUrl:'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1533985059572&di=bae2d1875ac2bf36594377bef1fff620&imgtype=0&src=http%3A%2F%2Fd.hiphotos.baidu.com%2Fimage%2Fpic%2Fitem%2F0b55b319ebc4b74560d94cd3c3fc1e178b8215a1.jpg',
-          motto:"好死不如赖活着"
+          msgUrl: res.url,
+          motto: res.msg
         })
+        //that.animation()
+        that.shake_shake_end(that.startAccelerometerProxy)
       },
       function (res) {
         that.setData({
@@ -102,6 +202,7 @@ var pageObject = {
         wx.showToast({
           title: '加载数据失败',
         })
+        that.shake_shake_end(that.startAccelerometerProxy)
       }
     )
   }

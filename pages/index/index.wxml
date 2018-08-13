@@ -8,8 +8,10 @@
     </block>
   </view> -->
 
+
+
   <view class='background'>
-    <image class='backgroundPic' mode='aspectFill|top left' src='{{msgUrl}}'/>
+    <image class='backgroundPic' mode='aspectFit' src='{{msgUrl}}'/>
   </view>
   <view class="usermotto">
     <text class="user-motto">{{motto}}</text>
@@ -19,6 +21,17 @@
 
   <button bindtap='animation'>播放动画</button>
 
-  <image class="userinfo-avatar" animation="{{animationData}}" src="../../source/image.jpg"/>
+  <!-- <image class="userinfo-avatar" src="../../source/image.jpg"/> -->
   <text class='error_log'>{{log_text}}</text>
+  <text>{{content}}</text>  
+
+  <view class='animation_container'>
+    <view class='top_animation' animation="{{animationData.animationTop}}">
+      <text>动画上半部分</text>
+    </view>
+
+    <view class='bottom_animation' animation="{{animationData.animationBottom}}">
+      <text>动画下半部分</text>
+    </view>
+  </view>
 </view>
