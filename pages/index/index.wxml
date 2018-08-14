@@ -1,14 +1,5 @@
 <!--index.wxml-->
 <view class="container">
-  <!-- <view class="userinfo">
-    <button wx:if="{{!hasUserInfo && canIUse}}" open-type="getUserInfo" bindgetuserinfo="getUserInfo"> 获取头像昵称 </button>
-    <block wx:else>
-      <image bindtap="bindViewTap" class="userinfo-avatar" src="{{userInfo.avatarUrl}}" background-size="cover"></image>
-      <text class="userinfo-nickname">{{userInfo.nickName}}</text>
-    </block>
-  </view> -->
-
-
 
   <view class='background'>
     <image class='backgroundPic' mode='aspectFit' src='{{msgUrl}}'/>
@@ -18,20 +9,24 @@
   </view>
 
   <button class='get-answer' bindtap='getAnswer'>看答案</button>
-
-  <button bindtap='animation'>播放动画</button>
+  <text class='tip-text'>摇一摇也可以看答案哦!</text>
+  <!-- <button bindtap='animation'>播放动画</button> -->
 
   <!-- <image class="userinfo-avatar" src="../../source/image.jpg"/> -->
-  <text class='error_log'>{{log_text}}</text>
-  <text>{{content}}</text>  
+  <!-- <text class='error_log'>{{log_text}}</text> -->
+  <!-- <text>{{content}}</text>   -->
 
-  <view class='animation_container'>
-    <view class='top_animation' animation="{{animationData.animationTop}}">
-      <text>动画上半部分</text>
-    </view>
-
-    <view class='bottom_animation' animation="{{animationData.animationBottom}}">
-      <text>动画下半部分</text>
-    </view>
+<scroll-view class="animation_container" style='scroll-y=false'>
+  <view class='top_animation' animation="{{animationData.animationTop}}">
+    <!-- <text>动画上半部分</text> -->
+    <image class="animation_image_top" mode="widFix" src='../../source/shake_shake_top.png'></image>
   </view>
+
+  <view class='bottom_animation' animation="{{animationData.animationBottom}}">
+    <!-- <text>动画下半部分</text> -->
+  <image class="animation_image_bottom" mode='widFix' src='../../source/shake_shake_bottom.png'></image>
+  </view>
+</scroll-view>
+  
+  <view class='masker-layer'></view>
 </view>

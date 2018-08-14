@@ -1,21 +1,4 @@
 /**index.wxss**/
-.userinfo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.userinfo-avatar {
-  width: 228rpx;
-  height: 228rpx;
-  margin: 20rpx;
-  /**border-radius: 50%;**/
-}
-
-.userinfo-nickname {
-  color: #aaa;
-}
-
 .background {
   width: 100%;
   height: 100%;
@@ -26,33 +9,82 @@
   width: 100%;
   height: 100%;
   position:absolute;
-  top: 0rpx;
-  bottom: 0rpx;
   z-index: -10
 }
 
 .usermotto {
-  margin-top: 200px;
+  margin-top: 180rpx;
+  display:flex;
+  align-items:center;
+  justify-content: center;
+  color: white;
+  padding-left: 20rpx;
+  padding-right: 20rpx;
+  position: absolute;
+  z-index: -5;
 }
 
+
 .animation_container {
+  background-color: rgba(0,0,0,0);
   position: absolute;
   width: 100%;
-  height: 100%;
-  z-index: -1;
-  background-color:rgba(0,0,0,0);
+  height:100%;
+  z-index: -4
 }
 
 .top_animation {
-  background-color: blanchedalmond;
+  background-color: #333;
   width: 100%;
   height: 50%;
   z-index: -4;
+  display:flex;
+  align-items:flex-end;
+  justify-content: center;
+}
+.animation_image_top {
+  width: 300rpx;
+  height: 220rpx;
 }
 
+
 .bottom_animation {
-  background-color: palevioletred;
+  background-color: #333;
   width: 100%;
   height: 50%;
   z-index: -4;
+  display:flex;
+  align-items:flex-start;
+  justify-content: center;
 }
+.animation_image_bottom {
+  width: 380rpx;
+  height: 220rpx;  
+  padding-left: 30rpx;
+}
+
+.get-answer {
+  background-color: green;
+  position: absolute;
+  top: 80%;
+  color: white;
+}
+
+.tip-text {
+  display:flex;
+  align-items:center;
+  position: absolute;
+  top: 90%;
+  font-size: 28rpx;
+  color: whitesmoke;
+}
+
+.masker-layer {
+  position: absolute;
+  opacity: 0.5;
+  background-color: rgb(0, 0, 0);
+  height: 100%;
+  width: 100%;
+  z-index: -6
+}
+

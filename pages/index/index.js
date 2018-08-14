@@ -5,7 +5,6 @@ const app = getApp()
 var network = require("../../utils/network.js")
 
 // 声音资源
-var audioCtx = wx.createAudioContext('myAudio')
 const innerAudioContext = wx.createInnerAudioContext()
 innerAudioContext.autoplay = false
 innerAudioContext.src = app.globalData.BASE_URL + app.globalData.MUSIC_PATH
@@ -16,7 +15,6 @@ innerAudioContext.onError((res) => {
   console.log(res.errMsg)
   console.log(res.errCode)
 })
-
 
 var pageObject = {
   data: {
@@ -30,7 +28,7 @@ var pageObject = {
       animationTop:{},
       animationBottom:{}
     },
-    animationDuration: 2000,
+    animationDuration: 600,
     shakeInfo: {
       num:0
     },
@@ -42,7 +40,7 @@ var pageObject = {
       lastY: 0,
       lastZ: 0,
       lastTime: 0,
-      shakeSpeed: 4,
+      shakeSpeed: 6,
       timeInterval: 1000,
       isRequest: false,
     }
@@ -146,6 +144,10 @@ var pageObject = {
     }
   },
   onLoad: function () {
+    this.setData({
+      clientHeight: app.globalData.screen_height,
+      overflow: 'hidden'
+    })
     wx.onAccelerometerChange(this.shake)
   },
   onShow:function() {
